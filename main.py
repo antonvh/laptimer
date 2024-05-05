@@ -3,21 +3,17 @@ from utime import ticks_ms
 from ssd1306 import SSD1306_I2C
 import VL53L0X
 import machine
-# Font
 import freesans20, font6
-
-# Import vl0x
-
-# Setup vL0x on sda 2, scl 26
 
 CALIB = 0
 OBJECT = 1
 WAITING = 3
+N_READS = 2
 
 state = CALIB
 dists = []
-fastest = 99.999
-last = 99.999 
+fastest = 99.99
+last = 99.99
 start = ticks_ms()
 
 def avg(l):
@@ -31,17 +27,16 @@ wri_sm = Writer(ssd, font6, verbose=False)
 Writer.set_textpos(ssd, 32, 0)  
 wri_sm.printstring('current')
 
-reads = [0,0]
+reads = [0]*N_READS
 idx = 0
 tof.start()
 while 1:
     t = ticks_ms()
-    
+    # Keep a running average of reads to prevent ghost triggers
     reads[idx]=tof.read()
     idx+=1
-    if idx >1: idx=0
-    d=sum(reads)/len(reads)
-    # tof.stop()
+    if idx >= N_READS: idx=0
+    d=sum(reads)/N_READS
     
     if t//100 % 5 == 0: # Every 500ms
         dists.append(d)
@@ -80,6 +75,6 @@ while 1:
         if d > avg_d * 0.9:
             state = WAITING
 
-    Writer.set_textpos(ssd, 43, 0)  # verbose = False to suppress console output
+    Writer.set_textpos(ssd, 43, 0)
     wri_lg.printstring(f"{(t-start)/1000:.2f}")
     ssd.show()
