@@ -6,4 +6,4 @@ a gate for race vehicles to pass through. It triggers when it sees something clo
 
 Copy all files to LMS-ESP32 to run. Check main.py for pin numbers and wiring.
 
-[lap timer on a LEGO hub](laptimer.jpg)
+![lap timer on a LEGO hub](laptimer.jpg)
